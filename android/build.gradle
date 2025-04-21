@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:8.1.0'
     }
 }
 
@@ -25,10 +25,11 @@ apply plugin: 'com.android.library'
 
 android {
     namespace 'io.github.wangyng.better_video_player'
-    compileSdkVersion 29
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 19
+        targetSdkVersion 33
     }
 
     compileOptions {
