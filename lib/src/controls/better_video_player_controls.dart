@@ -365,6 +365,8 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
         });
         Future.delayed(Duration.zero, () async {
           if (controller.value.isVideoFinish) {
+            controller.value = controller.value
+                .copyWith(isVideoFinish: false); // ✅ Reset finish flag
             await controller.seekTo(const Duration());
           }
           await controller.play();
