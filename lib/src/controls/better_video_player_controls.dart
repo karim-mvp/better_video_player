@@ -33,39 +33,44 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
   }
 
   Widget buildSpeedControl() {
-    return PopupMenuButton<double>(
-      initialValue: _currentSpeed,
-      tooltip: 'Playback speed',
-      onSelected: (double speed) {
-        setState(() {
-          _currentSpeed = speed;
-        });
-        final videoController = context
-            .read<BetterVideoPlayerController>()
-            .value
-            .videoPlayerController;
-        videoController?.setPlaybackSpeed(speed);
-      },
-      color: Colors.black87,
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
-        PopupMenuItem(
-          value: 0.5,
-          child: Text("0.5x", style: TextStyle(color: Colors.white)),
-        ),
-        PopupMenuItem(
-          value: 1.0,
-          child: Text("1x", style: TextStyle(color: Colors.white)),
-        ),
-        PopupMenuItem(
-          value: 2.0,
-          child: Text("2x", style: TextStyle(color: Colors.white)),
-        ),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      padding:
+          const EdgeInsets.all(4), // Added padding of 4 inside the container
+      child: PopupMenuButton<double>(
+        initialValue: _currentSpeed,
+        tooltip: 'Playback speed',
+        onSelected: (double speed) {
+          setState(() {
+            _currentSpeed = speed;
+          });
+          final videoController = context
+              .read<BetterVideoPlayerController>()
+              .value
+              .videoPlayerController;
+          videoController?.setPlaybackSpeed(speed);
+        },
+        color: Colors.white,
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
+          PopupMenuItem(
+            value: 0.5,
+            child: Text("0.5x", style: TextStyle(color: Colors.black)),
+          ),
+          PopupMenuItem(
+            value: 1.0,
+            child: Text("1x", style: TextStyle(color: Colors.black)),
+          ),
+          PopupMenuItem(
+            value: 2.0,
+            child: Text("2x", style: TextStyle(color: Colors.black)),
+          ),
+        ],
         child: Text(
           "${_currentSpeed}x",
-          style: TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(color: Colors.black, fontSize: 12),
         ),
       ),
     );
@@ -189,6 +194,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
                   () => show(duration: Duration(seconds: 3)),
                 ),
               ),
+              SizedBox(width: 9),
               buildSpeedControl(),
               if (controller.value.videoPlayerController != null)
                 buildExpand(
