@@ -22,6 +22,7 @@ class BetterVideoPlayerControls extends StatefulWidget {
 class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     with HideStuff<BetterVideoPlayerControls> {
   bool absorbing = false;
+  double _currentSpeed = 1.0;
 
   @override
   void initState() {
@@ -29,6 +30,45 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
 
     // 显示
     show(duration: Duration(seconds: 3));
+  }
+
+  Widget buildSpeedControl() {
+    return PopupMenuButton<double>(
+      initialValue: _currentSpeed,
+      tooltip: 'Playback speed',
+      onSelected: (double speed) {
+        setState(() {
+          _currentSpeed = speed;
+        });
+        final videoController = context
+            .read<BetterVideoPlayerController>()
+            .value
+            .videoPlayerController;
+        videoController?.setPlaybackSpeed(speed);
+      },
+      color: Colors.black87,
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
+        PopupMenuItem(
+          value: 0.5,
+          child: Text("0.5x", style: TextStyle(color: Colors.white)),
+        ),
+        PopupMenuItem(
+          value: 1.0,
+          child: Text("1x", style: TextStyle(color: Colors.white)),
+        ),
+        PopupMenuItem(
+          value: 2.0,
+          child: Text("2x", style: TextStyle(color: Colors.white)),
+        ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Text(
+          "${_currentSpeed}x",
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ),
+    );
   }
 
   @override
@@ -149,6 +189,7 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
                   () => show(duration: Duration(seconds: 3)),
                 ),
               ),
+              buildSpeedControl(),
               if (controller.value.videoPlayerController != null)
                 buildExpand(
                     widget.isFullScreen ? _onReduceCollapse : _onExpandCollapse)
