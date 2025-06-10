@@ -227,7 +227,11 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
                 borderRadius: BorderRadius.circular(15.0),
                 color: Colors.black26,
               ),
-              child: Text("restart", style: TextStyle(color: Colors.white)),
+              child: const Icon(
+                Icons.cached_rounded,
+                color: Colors.white,
+                size: 30,
+              ),
             ),
           ),
         ],
