@@ -44,47 +44,24 @@ class BetterVideoPlayerUtils {
   }
 
   ///Latest value can be null
-
-  // static bool isLoading(VideoPlayerValue? value) {
-  //   if (value == null) {
-  //     return true;
-  //   }
-
-  //   if (!value.isInitialized) {
-  //     return true;
-  //   }
-
-  //   // If video is playing, don't show loading spinner even if buffering briefly
-  //   if (value.isPlaying) {
-  //     return false;
-  //   }
-
-  //   // If video is not playing, show loading spinner if buffering or not ready
-  //   if (value.isBuffering) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // }
+  // MODIFIED: This is the only function where changes are needed.
   static bool isLoading(VideoPlayerValue? value) {
     if (value == null) {
-      return true;
+      return true; // Still loading if value is null (e.g., before controller is initialized)
     }
 
     if (!value.isInitialized) {
+      return true; // Still loading if the video player itself is not initialized
+    }
+
+    // Key change: Only consider it "loading" (requiring the spinner) if it's buffering
+    // AND the video is NOT currently playing.
+    // If it's playing and buffering, it's considered background buffering and shouldn't show a prominent spinner.
+    if (value.isBuffering && !value.isPlaying) {
       return true;
     }
 
-    Duration? bufferedEndPosition;
-    if (value.buffered.isNotEmpty == true) {
-      bufferedEndPosition = value.buffered.last.end;
-    }
-
-    if (bufferedEndPosition != null) {
-      if (value.isPlaying && value.isBuffering) {
-        return true;
-      }
-    }
+    // If none of the above conditions are met, it's not in a "loading" state that warrants the spinner.
     return false;
   }
 
