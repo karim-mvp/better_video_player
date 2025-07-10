@@ -45,27 +45,6 @@ class BetterVideoPlayerUtils {
 
   ///Latest value can be null
 
-  static bool isLoading(VideoPlayerValue? value) {
-    if (value == null) {
-      return true;
-    }
-
-    if (!value.isInitialized) {
-      return true;
-    }
-
-    // If video is playing, don't show loading spinner even if buffering briefly
-    if (value.isPlaying) {
-      return false;
-    }
-
-    // If video is not playing, show loading spinner if buffering or not ready
-    if (value.isBuffering) {
-      return true;
-    }
-
-    return false;
-  }
   // static bool isLoading(VideoPlayerValue? value) {
   //   if (value == null) {
   //     return true;
@@ -75,18 +54,39 @@ class BetterVideoPlayerUtils {
   //     return true;
   //   }
 
-  //   Duration? bufferedEndPosition;
-  //   if (value.buffered.isNotEmpty == true) {
-  //     bufferedEndPosition = value.buffered.last.end;
+  //   // If video is playing, don't show loading spinner even if buffering briefly
+  //   if (value.isPlaying) {
+  //     return false;
   //   }
 
-  //   if (bufferedEndPosition != null) {
-  //     if (value.isPlaying && value.isBuffering) {
-  //       return true;
-  //     }
+  //   // If video is not playing, show loading spinner if buffering or not ready
+  //   if (value.isBuffering) {
+  //     return true;
   //   }
+
   //   return false;
   // }
+  static bool isLoading(VideoPlayerValue? value) {
+    if (value == null) {
+      return true;
+    }
+
+    if (!value.isInitialized) {
+      return true;
+    }
+
+    Duration? bufferedEndPosition;
+    if (value.buffered.isNotEmpty == true) {
+      bufferedEndPosition = value.buffered.last.end;
+    }
+
+    if (bufferedEndPosition != null) {
+      if (value.isPlaying && value.isBuffering) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   static double? aspectRatio(VideoPlayerValue? value) {
     if (value == null || value.size.width == 0 || value.size.height == 0) {
