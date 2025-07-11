@@ -163,17 +163,14 @@ class BetterVideoPlayerController
   // 播放器状态变化
 
   void _onVideoPlayerChanged() async {
-    if (_dispose) {
-      return;
-    }
+    if (_dispose) return;
 
     await Future.delayed(Duration.zero);
 
     final currentValue = videoPlayerValue;
-
     bool isActuallyLoading = BetterVideoPlayerUtils.isLoading(currentValue);
 
-    // ✅ Fix: If the video is playing and not buffering, don't show loading
+    // ✅ Extra safeguard
     if (currentValue?.isPlaying == true && currentValue?.isBuffering == false) {
       isActuallyLoading = false;
     }
@@ -183,9 +180,9 @@ class BetterVideoPlayerController
     // emit playEnd event
     bool isVideoFinish = value.isVideoFinish;
     value = value.copyWith(
-        isVideoFinish:
-            BetterVideoPlayerUtils.isVideoFinished(videoPlayerValue));
-    if (isVideoFinish == false && value.isVideoFinish == true) {
+        isVideoFinish: BetterVideoPlayerUtils.isVideoFinished(currentValue));
+
+    if (!isVideoFinish && value.isVideoFinish) {
       _playerEventStreamController.sink.add(
         BetterVideoPlayerEvent(
             value.playerKey, BetterVideoPlayerEventType.onPlayEnd),

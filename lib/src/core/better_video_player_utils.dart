@@ -67,13 +67,11 @@ class BetterVideoPlayerUtils {
   //   return false;
   // }
   static bool isLoading(VideoPlayerValue? value) {
-    if (value == null) {
-      return true;
-    }
+    if (value == null) return true;
+    if (!value.isInitialized) return true;
 
-    if (!value.isInitialized) {
-      return true;
-    }
+    // ✅ If it's playing and not buffering, it's not loading.
+    if (value.isPlaying && !value.isBuffering) return false;
 
     Duration? bufferedEndPosition;
     if (value.buffered.isNotEmpty == true) {
@@ -81,10 +79,9 @@ class BetterVideoPlayerUtils {
     }
 
     if (bufferedEndPosition != null) {
-      if (value.isPlaying && value.isBuffering) {
-        return true;
-      }
+      if (value.isPlaying && value.isBuffering) return true;
     }
+
     return false;
   }
 

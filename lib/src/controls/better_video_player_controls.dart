@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:better_video_player/src/controls/progress/better_video_player_progress_widget.dart';
 import 'package:better_video_player/src/core/better_video_player_controller.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -108,7 +107,9 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
                 if (controller.value.videoPlayerController?.value.hasError ??
                     false) // 发生错误
                   buildError(_onRestart)
-                else if (controller.value.isLoading) // 加载中
+                else if (controller.value.isLoading &&
+                    !(controller.value.videoPlayerController?.value.isPlaying ??
+                        true)) // 加载中
                   Center(child: buildLoading())
                 else if (controller.value.isVideoFinish &&
                     !controller.value.configuration.looping) // 播放完成
