@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:better_video_player/better_video_player.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -147,9 +147,9 @@ class BetterVideoPlayerController
     if (connectivityResult == ConnectivityResult.wifi) {
       _connectivitySubscription = Connectivity()
           .onConnectivityChanged
-          .listen((ConnectivityResult result) {
+          .listen((List<ConnectivityResult> result) {
         if (value.videoPlayerController?.hasListeners == true) {
-          if (result != ConnectivityResult.wifi) {
+          if (!result.contains(ConnectivityResult.wifi)) {
             value = value.copyWith(wifiInterrupted: true);
             if (videoPlayerValue?.isPlaying ?? false) {
               pause();
