@@ -1,3 +1,4 @@
+
 name: better_video_player
 description: Advanced video player based on video_player.
 version: 1.4.0
@@ -19,7 +20,7 @@ dependencies:
   connectivity:
     git:
       url: https://github.com/karim-mvp/fork_connectivity_package.git
-      ref: new_feat
+      ref: main
 
 dev_dependencies:
   flutter_test:
