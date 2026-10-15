@@ -234,6 +234,13 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
       final fullScreenController = BetterVideoPlayerController.copy(controller);
 
+      // The copy shares the same video, but nothing was listening to it from the
+      // full screen side, so position / finish updates never reached the full
+      // screen UI. Its dispose() removes this listener again.
+      fullScreenController.attachVideoPlayerController(
+        videoPlayerController: fullScreenController.value.videoPlayerController,
+      );
+
       var fullScreenConfiguration = widget.configuration;
       final isPlaying = fullScreenController.value.videoPlayerController!.value.isPlaying;
       fullScreenConfiguration = fullScreenConfiguration.copyWith(autoPlay: isPlaying);
