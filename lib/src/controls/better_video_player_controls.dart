@@ -232,18 +232,23 @@ class BetterVideoPlayerControlsState extends State<BetterVideoPlayerControls>
     }
 
     final visible = !_isHide;
+    // Small visual circle, but the touch target stays a comfortable 44px.
+    const double circleSize = 34;
+    const double hitSize = 44;
+    const double hitOverflow = (hitSize - circleSize) / 2;
     return Positioned(
-      top: _layout.edgePadding,
-      left: _layout.edgePadding,
+      top: _layout.edgePadding - hitOverflow,
+      left: _layout.edgePadding - hitOverflow,
       child: IgnorePointer(
         ignoring: !visible,
         child: AnimatedOpacity(
           opacity: visible ? 1.0 : 0.0,
           duration: _kFadeDuration,
           child: _RoundIconButton(
-            icon: Icons.keyboard_arrow_down_rounded,
-            size: _layout.buttonSize,
-            iconSize: _layout.iconSize + 4,
+            icon: Icons.close_rounded,
+            size: circleSize,
+            hitSize: hitSize,
+            iconSize: 20,
             theme: _theme,
             filled: true,
             onTap: onTap,
@@ -952,6 +957,9 @@ class _RoundIconButton extends StatelessWidget {
   final VoidCallback onTap;
   final bool filled;
 
+  // Touch target, defaults to the visual size.
+  final double? hitSize;
+
   const _RoundIconButton({
     Key? key,
     required this.icon,
@@ -960,28 +968,36 @@ class _RoundIconButton extends StatelessWidget {
     required this.theme,
     required this.onTap,
     this.filled = false,
+    this.hitSize,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final target = hitSize ?? size;
     return _Pressable(
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        decoration: filled
-            ? BoxDecoration(
-                color: theme.surfaceColor,
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0x24FFFFFF)),
-              )
-            : null,
-        child: Icon(
-          icon,
-          color: theme.iconColor,
-          size: iconSize,
-          shadows: filled ? null : const [Shadow(color: Color(0x66000000), blurRadius: 6)],
+      child: SizedBox(
+        width: target,
+        height: target,
+        child: Center(
+          child: Container(
+            width: size,
+            height: size,
+            alignment: Alignment.center,
+            decoration: filled
+                ? BoxDecoration(
+                    color: theme.surfaceColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0x24FFFFFF)),
+                  )
+                : null,
+            child: Icon(
+              icon,
+              color: theme.iconColor,
+              size: iconSize,
+              shadows: filled ? null : const [Shadow(color: Color(0x66000000), blurRadius: 6)],
+            ),
+          ),
         ),
       ),
     );
