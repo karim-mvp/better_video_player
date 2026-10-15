@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:better_video_player/src/configuration/better_video_data_source.dart';
 import 'package:better_video_player/src/configuration/better_video_player_configuration.dart';
 import 'package:better_video_player/src/core/better_video_player_with_controls.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +11,12 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'better_video_player_controller.dart';
+
+// Full screen opens with a quick fade + subtle zoom on a black backdrop, and
+// the device rotates only once that backdrop covers the page. Rotating while
+// a page slides in is what made the old transition feel broken.
+const Duration _kFullScreenTransition = Duration(milliseconds: 300);
+const Duration _kFullScreenReverseTransition = Duration(milliseconds: 240);
 
 /// 播放器
 class BetterVideoPlayer extends StatelessWidget {
@@ -49,7 +54,8 @@ class _BetterVideoPlayer extends StatefulWidget {
 
   final bool isFullScreen;
 
-  const _BetterVideoPlayer({Key? key, required this.configuration, this.dataSource, required this.isFullScreen}) : super(key: key);
+  const _BetterVideoPlayer({Key? key, required this.configuration, this.dataSource, required this.isFullScreen})
+      : super(key: key);
 
   @override
   BetterVideoPlayerState createState() {
@@ -101,7 +107,8 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
           dataSource: widget.dataSource,
         );
 
-        if (oldWidget.dataSource?.type != widget.dataSource?.type || oldWidget.dataSource?.url != widget.dataSource?.url) {
+        if (oldWidget.dataSource?.type != widget.dataSource?.type ||
+            oldWidget.dataSource?.url != widget.dataSource?.url) {
           if (controller.value.dataSource != null) {
             // 数据源变化，销毁播放器
             controller.destroyVideoPlayerController();
@@ -182,7 +189,12 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
         deviceOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
       }
     }
-    SystemChrome.setPreferredOrientations(deviceOrientations);
+    bool exited = false;
+    Future.delayed(_kFullScreenTransition, () {
+      if (!exited) {
+        SystemChrome.setPreferredOrientations(deviceOrientations);
+      }
+    });
 
     // 屏幕常亮
     bool closeWakelock = false;
@@ -193,6 +205,7 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
 
     _fullScreen = true;
     await pushResult;
+    exited = true;
     _fullScreen = false;
 
     // 关闭屏幕常亮
@@ -228,17 +241,37 @@ class BetterVideoPlayerState extends State<_BetterVideoPlayer> with WidgetsBindi
       fullScreenController.value = fullScreenController.value.copyWith(configuration: fullScreenConfiguration);
 
       final result = await Navigator.of(context, rootNavigator: true).push(
-        CupertinoPageRoute<BetterVideoPlayer>(builder: (BuildContext context) {
-          return Scaffold(
-            backgroundColor: Colors.black,
-            body: SafeArea(
-              child: _FullScreenVideoPlayer(
-                configuration: fullScreenConfiguration,
-                controller: fullScreenController,
+        PageRouteBuilder<dynamic>(
+          opaque: true,
+          transitionDuration: _kFullScreenTransition,
+          reverseTransitionDuration: _kFullScreenReverseTransition,
+          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+            return Scaffold(
+              backgroundColor: Colors.black,
+              body: SafeArea(
+                child: _FullScreenVideoPlayer(
+                  configuration: fullScreenConfiguration,
+                  controller: fullScreenController,
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+          transitionsBuilder:
+              (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            return FadeTransition(
+              opacity: curved,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.94, end: 1.0).animate(curved),
+                child: child,
+              ),
+            );
+          },
+        ),
       );
 
       // 需要延时, 因为页面关闭后不会立即释放provider

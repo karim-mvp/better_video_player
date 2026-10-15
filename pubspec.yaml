@@ -1,12 +1,12 @@
 name: better_video_player
 description: Advanced video player based on video_player.
-version: 1.4.0
+version: 1.5.0
 homepage: https://github.com/WangYng
 repository: https://github.com/WangYng/better_video_player
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0"
+  flutter: ">=3.16.0"
 
 dependencies:
   flutter:

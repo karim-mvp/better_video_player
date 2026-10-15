@@ -1,6 +1,7 @@
 library better_player;
 
 export 'src/configuration/better_video_player_configuration.dart';
+export 'src/configuration/better_video_player_theme.dart';
 export 'src/configuration/better_video_data_source.dart';
 export 'src/configuration/better_video_data_source_type.dart';
 export 'src/core/better_video_player.dart';

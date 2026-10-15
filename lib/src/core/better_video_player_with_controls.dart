@@ -30,23 +30,42 @@ class _BetterVideoPlayerWithControlsState extends State<BetterVideoPlayerWithCon
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          if (videoInitialized)
-            Center(
-              child: ClipRRect(
-                child: AspectRatio(
-                  aspectRatio: videoAspectRatio,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      widget.configuration.placeholder,
-                      VideoPlayer(controller.value.videoPlayerController!),
-                    ],
+          // Cross-fade from the placeholder to the first video frame instead of
+          // popping it in.
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 320),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+              return Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  ...previousChildren,
+                  if (currentChild != null) currentChild,
+                ],
+              );
+            },
+            child: videoInitialized
+                ? Center(
+                    key: const ValueKey('video'),
+                    child: ClipRRect(
+                      child: AspectRatio(
+                        aspectRatio: videoAspectRatio,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            widget.configuration.placeholder,
+                            VideoPlayer(controller.value.videoPlayerController!),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : KeyedSubtree(
+                    key: const ValueKey('placeholder'),
+                    child: widget.configuration.placeholder,
                   ),
-                ),
-              ),
-            )
-          else
-            widget.configuration.placeholder,
+          ),
           if (widget.isFullScreen) widget.configuration.fullScreenControls else widget.configuration.controls,
         ],
       ),

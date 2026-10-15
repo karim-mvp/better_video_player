@@ -85,4 +85,5 @@ fix wakelock_plus error
 ## 1.3.2
 minSdkVersion 16 to 19
 ## 1.4.0
-dynamic update video url
+dynamic update video url## 1.5.0
+Araby AI redesign of the player controls (UI/UX only, playback logic unchanged): full-width touch-friendly progress bar with scrub preview, brand theme (BetterVideoPlayerTheme), delayed branded loader, compact layouts for small players, fade full-screen transition.
